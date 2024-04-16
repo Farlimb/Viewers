@@ -11,6 +11,8 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const [dynamicInfo, setDynamicInfo] = useState(null);
   const [appConfig] = useAppConfig();
   const isMountedRef = useRef(null);
+  const [frameRangeStart, setFrameRangeStart] = useState(); // State for frameRangeStart
+  const [frameRangeEnd, setFrameRangeEnd] = useState(); // State for frameRangeEnd
 
   const cineHandler = () => {
     if (!cines?.[viewportId] || !enabledVPElement) {
@@ -21,10 +23,17 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
     const validFrameRate = Math.max(frameRate, 1);
 
     return isPlaying
-      ? cineService.playClip(enabledVPElement, { framesPerSecond: validFrameRate })
+      ? cineService.playClip(enabledVPElement, {
+          framesPerSecond: validFrameRate,
+          frameRangeStart,
+          frameRangeEnd,
+        })
       : cineService.stopClip(enabledVPElement);
   };
-
+  const handleFrameRangeChange = (start, end) => {
+    setFrameRangeStart(start);
+    setFrameRangeEnd(end);
+  };
   const newDisplaySetHandler = useCallback(() => {
     if (!enabledVPElement || !isCineEnabled) {
       return;
@@ -131,6 +140,9 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
       isPlaying={isPlaying}
       dynamicInfo={dynamicInfo}
       customizationService={customizationService}
+      frameRangeEnd={frameRangeEnd}
+      frameRangeStart={frameRangeStart}
+      handleFrameRangeChange={handleFrameRangeChange}
     />
   );
 }
@@ -140,6 +152,8 @@ function RenderCinePlayer({
   cineService,
   newStackFrameRate,
   isPlaying,
+
+  handleFrameRangeChange,
   dynamicInfo: dynamicInfoProp,
   customizationService,
 }) {
@@ -223,6 +237,7 @@ function RenderCinePlayer({
       }
       dynamicInfo={dynamicInfo}
       updateDynamicInfo={updateDynamicInfo}
+      handleFrameRangeChange={handleFrameRangeChange}
     />
   );
 }

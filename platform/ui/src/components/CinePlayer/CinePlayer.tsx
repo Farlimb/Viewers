@@ -15,9 +15,12 @@ export type CinePlayerProps = {
   maxFrameRate?: number;
   stepFrameRate?: number;
   frameRate?: number;
+  frameStart?: number; // Added prop for frame range start
+  frameEnd?: number; // Added prop for frame range end
   onFrameRateChange: (value: number) => void;
   onPlayPauseChange: (value: boolean) => void;
   onClose: () => void;
+  handleFrameRangeChange: (start: number, end: number) => void; // Added handler for frame range change
   updateDynamicInfo?: () => void;
   dynamicInfo?: {
     timePointIndex: number;
@@ -36,17 +39,39 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   maxFrameRate,
   stepFrameRate,
   frameRate: defaultFrameRate,
+  frameStart: defaultFrameStart, // Added prop for frame range start
+  frameEnd: defaultFrameEnd, // Added prop for frame range end
   dynamicInfo = {},
   onFrameRateChange,
   onPlayPauseChange,
+  handleFrameRangeChange, // Added handler for frame range change
   onClose,
   updateDynamicInfo,
 }) => {
   const isDynamic = !!dynamicInfo?.numTimePoints;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
   const debouncedSetFrameRate = useCallback(debounce(onFrameRateChange, 100), [onFrameRateChange]);
+  const [frameStart, setFrameStart] = useState(defaultFrameStart || 1); // Initialize frame start state
+  const [frameEnd, setFrameEnd] = useState(defaultFrameEnd || 50); // Initialize frame end state
 
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
+
+  // Handlers for frame range changes
+  const handleFrameRangeStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value)) {
+      setFrameStart(value);
+      handleFrameRangeChange(value, frameEnd); // Call handler function with updated frame start
+    }
+  };
+
+  const handleFrameRangeEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value)) {
+      setFrameEnd(value);
+      handleFrameRangeChange(frameStart, value); // Call handler function with updated frame end
+    }
+  };
 
   const handleSetFrameRate = (frameRate: number) => {
     if (frameRate < minFrameRate || frameRate > maxFrameRate) {
@@ -145,7 +170,19 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
               </div>
             </div>
           </Tooltip>
-
+          <input
+            type="number"
+            value={frameStart}
+            onChange={handleFrameRangeStartChange}
+            className="border-secondary-light bg-primary-dark w-12 rounded border px-2 py-1 text-white"
+          />
+          <span className="text-white">-</span>
+          <input
+            type="number"
+            value={frameEnd}
+            onChange={handleFrameRangeEndChange}
+            className="border-secondary-light bg-primary-dark w-12 rounded border px-2 py-1 text-white"
+          />
           <div
             className={`${fpsButtonClassNames} rounded-r`}
             onClick={() => handleSetFrameRate(frameRate + 1)}
@@ -171,6 +208,7 @@ CinePlayer.defaultProps = {
   maxFrameRate: 90,
   stepFrameRate: 1,
   frameRate: 24,
+
   onPlayPauseChange: noop,
   onFrameRateChange: noop,
   onClose: noop,
@@ -197,6 +235,11 @@ CinePlayer.propTypes = {
     numTimePoints: PropTypes.number,
     label: PropTypes.string,
   }),
+  // PropTypes for frame range start and end
+  frameStart: PropTypes.number,
+  frameEnd: PropTypes.number,
+  // PropTypes for handler function for frame range change
+  handleFrameRangeChange: PropTypes.func,
 };
 
 export default CinePlayer;

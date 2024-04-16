@@ -1,5 +1,6 @@
 import { cache } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
+import { playClip as play, stopClip as stop } from '../../../cine/playClip';
 
 function _getVolumesFromViewport(viewport) {
   return viewport ? viewport.getActors().map(actor => cache.getVolume(actor.uid)) : [];
@@ -56,11 +57,11 @@ function initCineService(servicesManager) {
   };
 
   const playClip = (element, playClipOptions) => {
-    return utilities.cine.playClip(element, playClipOptions);
+    return play(element, playClipOptions); // Fixed code
   };
 
   const stopClip = element => {
-    return utilities.cine.stopClip(element);
+    return stop(element);
   };
 
   cineService.setServiceImplementation({
