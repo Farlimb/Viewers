@@ -1,6 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { StudySummary, MeasurementTable, useViewportGrid, ActionButtons } from '@ohif/ui';
+import {
+  StudySummary,
+  MeasurementTable,
+  useViewportGrid,
+  ActionButtons,
+  Modal,
+  InputText,
+  InputNumber,
+} from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import { useAppConfig } from '@state';
@@ -33,6 +41,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
   const measurementsPanelRef = useRef(null);
   const [appConfig] = useAppConfig();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
@@ -224,6 +233,34 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           />
         </div>
       )}
+      <ActionButtons
+        t={t}
+        actions={[
+          {
+            label: 'Add Heart USG SR Report',
+            onClick: () => {
+              setIsModalOpen(true);
+            },
+          },
+        ]}
+      />
+      <Modal
+        closeButton
+        shouldCloseOnEsc
+        isOpen={isModalOpen}
+        title={"Heart USG SR Report"}
+        onClose={() => {
+          setIsModalOpen(false);
+        }}
+      >
+        <div className="modal-content">
+          <p>This is a modal window.</p>
+          <br />
+          <p>Nech sa paci tu mozes pisat.</p>
+          <InputText value={'value'} />
+          <InputNumber></InputNumber>
+        </div>
+      </Modal>
     </>
   );
 }
