@@ -8,6 +8,7 @@ import {
   Modal,
   InputText,
   InputNumber,
+  Label,
 } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
@@ -41,7 +42,9 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
   const measurementsPanelRef = useRef(null);
   const [appConfig] = useAppConfig();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
+  const [isModalOpen2, setIsModalOpen2] = useState(false);
+  const [isModalOpen3, setIsModalOpen3] = useState(false);
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
@@ -179,6 +182,21 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const disabled =
     additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
 
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('');
+  const [height, setHeight] = useState('');
+  const [weight, setWeight] = useState('');
+  const [bloodPresure, setBloodPresure] = useState('');
+  const [refferingPI, setRefferingPI] = useState('');
+  const [interpretingPI, setInterpretingPI] = useState('');
+  const [dateOfStudy, setDateOfStudy] = useState('');
+  const [ECHGInstrumentIdentification, setECHGInstrumentIdentification] = useState('');
+  const [endDiastole, setEndDiastole] = useState('');
+  const [endSystole, setEndSystole] = useState('');
+  const [wallThickness, setWallThickness] = useState('');
+  const [functionAssesment, setFunctionAssesment] = useState('');
+
   return (
     <>
       <div
@@ -239,7 +257,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
           {
             label: 'Add Heart USG SR Report',
             onClick: () => {
-              setIsModalOpen(true);
+              setIsModalOpen1(true);
             },
           },
         ]}
@@ -247,19 +265,226 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       <Modal
         closeButton
         shouldCloseOnEsc
-        isOpen={isModalOpen}
-        title={"Heart USG SR Report"}
+        isOpen={isModalOpen1}
+        title={'Echocardiography report'}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsModalOpen1(false);
         }}
       >
-        <div className="modal-content">
-          <p>This is a modal window.</p>
-          <br />
-          <p>Nech sa paci tu mozes pisat.</p>
-          <InputText value={'value'} />
-          <InputNumber></InputNumber>
-        </div>
+        <form>
+          <div className="modal-content">
+            <p>Patient's personal information</p>
+            <br />
+            <label>
+              <InputText
+                label="Patient`s name"
+                value={name}
+                onChange={newValue => {
+                  setName(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Age"
+                value={age}
+                onChange={newValue => {
+                  setAge(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Gender"
+                value={gender}
+                onChange={newValue => {
+                  setGender(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Height"
+                value={height}
+                onChange={newValue => {
+                  setHeight(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Weight"
+                value={weight}
+                onChange={newValue => {
+                  setWeight(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Blood presure"
+                value={bloodPresure}
+                onChange={newValue => {
+                  setBloodPresure(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <ActionButtons
+              t={t}
+              actions={[
+                {
+                  label: 'Next Step',
+                  onClick: () => {
+                    setIsModalOpen1(false);
+                    setIsModalOpen2(true);
+                  },
+                },
+              ]}
+            />
+            <br />
+          </div>
+        </form>
+      </Modal>
+      <Modal
+        closeButton
+        shouldCloseOnEsc
+        isOpen={isModalOpen2}
+        title={'Echocardiography report'}
+        onClose={() => {
+          setIsModalOpen2(false);
+        }}
+      >
+        <form>
+          <div className="modal-content">
+            <p>Exam generic information</p>
+            <br />
+            <label>
+              <InputText
+                label="Referring physician identification"
+                value={refferingPI}
+                onChange={newValue => {
+                  setRefferingPI(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Interpreting physician identification"
+                value={interpretingPI}
+                onChange={newValue => {
+                  setInterpretingPI(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Date of study"
+                value={dateOfStudy}
+                onChange={newValue => {
+                  setDateOfStudy(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Echocardiographic instrument identification"
+                value={ECHGInstrumentIdentification}
+                onChange={newValue => {
+                  setECHGInstrumentIdentification(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <ActionButtons
+              t={t}
+              actions={[
+                {
+                  label: 'NextStep',
+                  onClick: () => {
+                    setIsModalOpen2(false);
+                    setIsModalOpen3(true);
+                  },
+                },
+              ]}
+            />
+          </div>
+        </form>
+      </Modal>
+      <Modal
+        closeButton
+        shouldCloseOnEsc
+        isOpen={isModalOpen3}
+        title={'Echocardiography report'}
+        onClose={() => {
+          setIsModalOpen3(false);
+        }}
+      >
+        <form>
+          <div className="modal-content">
+            <p>Left venticle</p>
+            <br />
+            <label>
+              <InputText
+                label="End-diastole"
+                value={endDiastole}
+                onChange={newValue => {
+                  setEndDiastole(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="End-systole"
+                value={endSystole}
+                onChange={newValue => {
+                  setEndSystole(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Wall thickness"
+                value={wallThickness}
+                onChange={newValue => {
+                  setWallThickness(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <label>
+              <InputText
+                label="Function assesment"
+                value={functionAssesment}
+                onChange={newValue => {
+                  setFunctionAssesment(newValue);
+                }}
+              />
+            </label>
+            <br />
+            <ActionButtons
+              t={t}
+              actions={[
+                {
+                  label: 'Submit',
+                  onClick: () => {
+                    setIsModalOpen3(false);
+                  },
+                },
+              ]}
+            />
+          </div>
+        </form>
       </Modal>
     </>
   );
