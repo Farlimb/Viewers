@@ -17,6 +17,9 @@ import { useTrackedMeasurements } from '../../getContextModule';
 import debounce from 'lodash.debounce';
 import { useTranslation } from 'react-i18next';
 
+import jsPDF from 'jspdf';
+
+
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
 
@@ -196,6 +199,61 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [endSystole, setEndSystole] = useState('');
   const [wallThickness, setWallThickness] = useState('');
   const [functionAssesment, setFunctionAssesment] = useState('');
+
+
+  const generatePDF = () => {
+
+    // Get the current URL
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // Retrieve the StudyInstanceUID parameter from the URL
+  const studyInstanceUID = urlParams.get('StudyInstanceUIDs');
+
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
+  
+     // Set font style and size for the header
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+
+  // Add header for patient's personal information
+  doc.text('Patient\'s personal information:', 10, 10);
+
+  // Reset font style and size for the rest of the content
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(12);
+
+    doc.text(`Name: ${name}`, 10, 20);
+    doc.text(`Age: ${age}`, 10, 30);
+    doc.text(`Gender: ${gender}`, 10, 40);
+    doc.text(`Height: ${height}`, 10, 50);
+    doc.text(`Weight: ${weight}`, 10, 60);
+    doc.text(`Blood Pressure: ${bloodPresure}`, 10, 70);
+    
+    
+    doc.text('Exam generic information:', 10, 90);
+    doc.text(`Referring Physician Identification: ${refferingPI}`, 10, 100);
+    doc.text(`Interpreting Physician Identification: ${interpretingPI}`, 10, 110);
+    doc.text(`Date of Study: ${dateOfStudy}`, 10, 120);
+    doc.text(`Echocardiographic Instrument Identification: ${ECHGInstrumentIdentification}`, 10, 130);
+  
+    doc.text('Left ventricle:', 10, 150);
+    doc.text(`End-diastole: ${endDiastole}`, 10, 160);
+    doc.text(`End-systole: ${endSystole}`, 10, 170);
+    doc.text(`Wall thickness: ${wallThickness}`, 10, 180);
+    doc.text(`Function assessment: ${functionAssesment}`, 10, 190);
+  
+    doc.text(`Study Instance UID: ${studyInstanceUID}`, 10, 210);
+    
+    const filename = `${name}_patient_info.pdf`;
+
+    // Save the PDF file with the custom filename
+    doc.save(filename);
+  
+    // Close the modal after saving the PDF
+    setIsModalOpen3(false);
+  };
+  
 
   return (
     <>
@@ -408,7 +466,14 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
               t={t}
               actions={[
                 {
-                  label: 'NextStep',
+                  label: 'Previous Step',
+                  onClick: () => {
+                    setIsModalOpen2(false);
+                    setIsModalOpen1(true);
+                  },
+                },
+                {
+                  label: 'Next Step',
                   onClick: () => {
                     setIsModalOpen2(false);
                     setIsModalOpen3(true);
@@ -476,11 +541,16 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
               t={t}
               actions={[
                 {
-                  label: 'Submit',
+                  label: 'Previous Step',
                   onClick: () => {
                     setIsModalOpen3(false);
+                    setIsModalOpen2(true);
                   },
                 },
+                {
+                  label: 'Submit',
+                  onClick:generatePDF,
+                },               
               ]}
             />
           </div>
