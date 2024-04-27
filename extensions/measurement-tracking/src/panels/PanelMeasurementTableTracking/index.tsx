@@ -7,8 +7,6 @@ import {
   ActionButtons,
   Modal,
   InputText,
-  InputNumber,
-  Label,
 } from '@ohif/ui';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
@@ -18,7 +16,6 @@ import debounce from 'lodash.debounce';
 import { useTranslation } from 'react-i18next';
 
 import jsPDF from 'jspdf';
-
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -199,29 +196,35 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
   const [endSystole, setEndSystole] = useState('');
   const [wallThickness, setWallThickness] = useState('');
   const [functionAssesment, setFunctionAssesment] = useState('');
-
+  const [leftAtriumSize, setLeftAtriumSize] = useState('');
+  const [aorticRootDimension, setAorticRootDimension] = useState('');
+  const [valvularStenosisSeverity, setValvularStenosisSeverity] = useState('');
+  const [subvalvularStenosisSeverity, setSubvalvularStenosisSeverity] = useState('');
+  const [valvularRegurgitationSeverity, setValvularRegurgitationSeverity] = useState('');
+  const [prostheticValvesGradience, setProstheticValvesGradience] = useState('');
+  const [prostheticValvesRegurgitation, setProstheticValvesRegurgitation] = useState('');
+  const [cardiacShunts, setCardiacShunts] = useState('');
 
   const generatePDF = () => {
-
     // Get the current URL
-  const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
 
-  // Retrieve the StudyInstanceUID parameter from the URL
-  const studyInstanceUID = urlParams.get('StudyInstanceUIDs');
+    // Retrieve the StudyInstanceUID parameter from the URL
+    const studyInstanceUID = urlParams.get('StudyInstanceUIDs');
 
     // Create a new jsPDF instance
     const doc = new jsPDF();
-  
-     // Set font style and size for the header
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
 
-  // Add header for patient's personal information
-  doc.text('Patient\'s personal information:', 10, 10);
+    // Set font style and size for the header
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
 
-  // Reset font style and size for the rest of the content
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(12);
+    // Add header for patient's personal information
+    doc.text("Patient's personal information:", 10, 10);
+
+    // Reset font style and size for the rest of the content
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
 
     doc.text(`Name: ${name}`, 10, 20);
     doc.text(`Age: ${age}`, 10, 30);
@@ -229,31 +232,55 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
     doc.text(`Height: ${height}`, 10, 50);
     doc.text(`Weight: ${weight}`, 10, 60);
     doc.text(`Blood Pressure: ${bloodPresure}`, 10, 70);
-    
-    
+
     doc.text('Exam generic information:', 10, 90);
     doc.text(`Referring Physician Identification: ${refferingPI}`, 10, 100);
     doc.text(`Interpreting Physician Identification: ${interpretingPI}`, 10, 110);
     doc.text(`Date of Study: ${dateOfStudy}`, 10, 120);
-    doc.text(`Echocardiographic Instrument Identification: ${ECHGInstrumentIdentification}`, 10, 130);
-  
+    doc.text(
+      `Echocardiographic Instrument Identification: ${ECHGInstrumentIdentification}`,
+      10,
+      130
+    );
+
     doc.text('Left ventricle:', 10, 150);
     doc.text(`End-diastole: ${endDiastole}`, 10, 160);
     doc.text(`End-systole: ${endSystole}`, 10, 170);
     doc.text(`Wall thickness: ${wallThickness}`, 10, 180);
     doc.text(`Function assessment: ${functionAssesment}`, 10, 190);
-  
-    doc.text(`Study Instance UID: ${studyInstanceUID}`, 10, 210);
-    
+
+    doc.text('Left atrium:', 10, 210);
+    doc.text(`Size: ${leftAtriumSize}`, 10, 220);
+
+    doc.text('Aortic root:', 10, 240);
+    doc.text(`Dimension: ${aorticRootDimension}`, 10, 250);
+
+    doc.text('Valvular stenosis:', 10, 270);
+    doc.text(`Severity: ${valvularStenosisSeverity}`, 10, 280);
+    doc.text(`Subvalvular stenosis severity: ${subvalvularStenosisSeverity}`, 10, 290);
+
+    doc.addPage();
+
+    doc.text('Valvular regurgitation:', 10, 10);
+    doc.text(`Severity: ${valvularRegurgitationSeverity}`, 10, 20);
+
+    doc.text('Prosthetic valves:', 10, 40);
+    doc.text(`Transvalvular gradience: ${prostheticValvesGradience}`, 10, 50);
+    doc.text(`Description of regurgitation: ${prostheticValvesRegurgitation}`, 10, 60);
+
+    doc.text('Cardiac shunts:', 10, 80);
+    doc.text(`Severity: ${cardiacShunts}`, 10, 90);
+
+    doc.text(`Study Instance UID: ${studyInstanceUID}`, 10, 110);
+
     const filename = `${name}_patient_info.pdf`;
 
     // Save the PDF file with the custom filename
     doc.save(filename);
-  
+
     // Close the modal after saving the PDF
     setIsModalOpen3(false);
   };
-  
 
   return (
     <>
@@ -331,11 +358,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
       >
         <form>
           <div className="modal-content">
-            <p>Patient's personal information</p>
+            <p>Patient&apos;s personal information</p>
             <br />
             <label>
               <InputText
-                label="Patient`s name"
+                label="Patient's name"
                 value={name}
                 onChange={newValue => {
                   setName(newValue);
@@ -537,6 +564,81 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
               />
             </label>
             <br />
+            <p>Left atrium</p>
+            <br />
+            <InputText
+              label="Size"
+              value={leftAtriumSize}
+              onChange={newValue => {
+                setLeftAtriumSize(newValue);
+              }}
+            ></InputText>
+            <br />
+            <p>Aortic root</p>
+            <br />
+            <InputText
+              label="Dimension"
+              value={aorticRootDimension}
+              onChange={newValue => {
+                setAorticRootDimension(newValue);
+              }}
+            ></InputText>
+            <br />
+            <p>Valvular stenosis</p>
+            <br />
+            <InputText
+              label="Assessment of severity"
+              value={valvularStenosisSeverity}
+              onChange={newValue => {
+                setValvularStenosisSeverity(newValue);
+              }}
+            ></InputText>
+            <br />
+            <InputText
+              label="Subvalvular stenosis assessment of severity"
+              value={subvalvularStenosisSeverity}
+              onChange={newValue => {
+                setSubvalvularStenosisSeverity(newValue);
+              }}
+            ></InputText>
+            <br />
+            <p>Valvular regurgitation</p>
+            <br />
+            <InputText
+              label="Assessment of severity"
+              value={valvularRegurgitationSeverity}
+              onChange={newValue => {
+                setValvularRegurgitationSeverity(newValue);
+              }}
+            ></InputText>
+            <br />
+            <p>Prosthetic valves</p>
+            <br />
+            <InputText
+              label="Transvalvular gradience and effective orifice area"
+              value={prostheticValvesGradience}
+              onChange={newValue => {
+                setProstheticValvesGradience(newValue);
+              }}
+            ></InputText>
+            <br />
+            <InputText
+              label="Description of regurgitation"
+              value={prostheticValvesRegurgitation}
+              onChange={newValue => {
+                setProstheticValvesRegurgitation(newValue);
+              }}
+            ></InputText>
+            <br />
+            <p>Cardiac shunts</p>
+            <InputText
+              label="Assessment of severity"
+              value={cardiacShunts}
+              onChange={newValue => {
+                setCardiacShunts(newValue);
+              }}
+            ></InputText>
+            <br />
             <ActionButtons
               t={t}
               actions={[
@@ -549,8 +651,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }) {
                 },
                 {
                   label: 'Submit',
-                  onClick:generatePDF,
-                },               
+                  onClick: generatePDF,
+                },
               ]}
             />
           </div>
