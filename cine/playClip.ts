@@ -335,7 +335,7 @@ function _getVolumesFromViewport(viewport): Types.IImageVolume[] {
     .filter(volume => !!volume);
 }
 
-function _getVolumeFromViewport(viewport): Types.IImageVolume {
+export function _getVolumeFromViewport(viewport): Types.IImageVolume {
   const volumes = _getVolumesFromViewport(viewport);
   const dynamicVolume = volumes.find(volume => volume.isDynamicVolume());
 
@@ -426,7 +426,7 @@ function _createVolumeViewportCinePlayContext(
   };
 }
 
-function _createDynamicVolumeViewportCinePlayContext(
+export function _createDynamicVolumeViewportCinePlayContext(
   volume: Types.IDynamicImageVolume
 ): CinePlayContext {
   return {

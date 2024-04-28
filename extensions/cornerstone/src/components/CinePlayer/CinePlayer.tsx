@@ -11,8 +11,8 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
   const [dynamicInfo, setDynamicInfo] = useState(null);
   const [appConfig] = useAppConfig();
   const isMountedRef = useRef(null);
-  const [frameRangeStart, setFrameRangeStart] = useState(); // State for frameRangeStart
-  const [frameRangeEnd, setFrameRangeEnd] = useState(); // State for frameRangeEnd
+  const [frameRangeStart, setFrameRangeStart] = useState(1); // State for frameRangeStart
+  const [frameRangeEnd, setFrameRangeEnd] = useState(94); // State for frameRangeEnd
 
   const cineHandler = () => {
     if (!cines?.[viewportId] || !enabledVPElement) {
@@ -89,7 +89,7 @@ function WrappedCinePlayer({ enabledVPElement, viewportId, servicesManager }) {
 
   /**
    * Use effect for handling new display set
-   */
+*/
   useEffect(() => {
     if (!enabledVPElement) {
       return;
