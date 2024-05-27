@@ -15,9 +15,8 @@
 # This dockerfile has two stages:
 #
 # 1. Building the React application for production
-# 2. Setting up our Nginx (Alpine Linux) image w/ step one's output
+# 2. Setting up our Apache (Alpine Linux) image w/ step one's output
 #
-
 
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
@@ -30,11 +29,6 @@ COPY ["package.json", "yarn.lock", "preinstall.js", "./"]
 COPY extensions /usr/src/app/extensions
 COPY modes /usr/src/app/modes
 COPY platform /usr/src/app/platform
-
-# Find and remove non-package.json files
-#RUN find extensions \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find modes \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find platform \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
 
 # Copy Files
 FROM node:18.16.1-slim as builder
@@ -55,25 +49,39 @@ RUN yarn install --frozen-lockfile --verbose
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 ENV QUICK_BUILD true
-# ENV GENERATE_SOURCEMAP=false
-# ENV REACT_APP_CONFIG=config/default.js
 
 RUN yarn run build
 
 # Stage 3: Bundle the built application into a Docker container
-# which runs Nginx using Alpine Linux
-FROM nginxinc/nginx-unprivileged:1.25-alpine as final
-#RUN apk add --no-cache bash
+# which runs Apache using Alpine Linux
+FROM httpd:2.4-alpine as final
+
+# Environment variable for the port
 ENV PORT=80
-RUN rm /etc/nginx/conf.d/default.conf
-USER nginx
-COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
+ENV SSL_PORT=443
+
+# Install gettext for envsubst
+RUN apk update && apk add gettext
+
+# Copy application files to the Apache document root
+COPY --from=builder /usr/src/app/platform/app/dist /usr/local/apache2/htdocs/
+
+# Copy the entrypoint script and make it executable
+COPY .docker/Viewer-v3.x/entrypoint.sh /usr/src/entrypoint.sh
 RUN chmod 777 /usr/src/entrypoint.sh
-COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html
-# In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
-# The nginx user cannot chmod it, so change to root.
-USER root
-RUN chmod 666 /usr/share/nginx/html/app-config.js
-USER nginx
+
+# Copy Apache configuration templates
+COPY .docker/Viewer-v3.x/default.conf.template /usr/src/default.conf.template
+COPY .docker/Viewer-v3.x/default.ssl.conf.template /usr/src/default.ssl.conf.template
+
+# Ensure the app-config.js is writable
+RUN chmod 666 /usr/local/apache2/htdocs/app-config.js
+
+# Expose the port
+EXPOSE ${PORT}
+EXPOSE ${SSL_PORT}
+# Set the entrypoint script
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+
+# Run Apache in the foreground
+CMD ["httpd-foreground"]

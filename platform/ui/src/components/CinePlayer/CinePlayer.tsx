@@ -179,21 +179,21 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <p className="font-bold text-white pr-2">Start</p>
+          <p className="pr-2 font-bold text-white">Start</p>
           <input
             type="number"
             value={frameStart}
             onChange={handleFrameRangeStartChange}
-            className="border-secondary-light bg-primary-dark w-12 rounded border px-2 text-center py-1 text-white"
+            className="border-secondary-light bg-primary-dark w-12 rounded border px-2 py-1 text-center text-white"
         />
         </div>
         <div className="flex items-center justify-center">
-          <p className="font-bold text-white pr-2">End</p>
+          <p className="pr-2 font-bold text-white">End</p>
           <input
             type="number"
             value={frameEnd}
             onChange={handleFrameRangeEndChange}
-            className="border-secondary-light bg-primary-dark w-12 rounded border text-center px-2 py-1 text-white"
+            className="border-secondary-light bg-primary-dark w-12 rounded border px-2 py-1 text-center text-white"
           />
         </div>
 

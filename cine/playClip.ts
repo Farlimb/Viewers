@@ -143,13 +143,6 @@ function playClip(element: HTMLDivElement, playClipOptions: PlayClipOptions): vo
     } else if (newStepIndex < 0) {
       newStepIndex = numScrollSteps - 1;
     }
-    console.log(
-      playClipOptions.frameRangeStart,
-      playClipOptions.frameRangeEnd,
-      newStepIndex,
-      currentStepIndex
-    );
-
     if (
       newStepIndex >= playClipOptions.frameRangeStart &&
       newStepIndex < playClipOptions.frameRangeEnd
